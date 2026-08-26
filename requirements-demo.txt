@@ -1,6 +1,6 @@
 # Lightweight, offline-capable dependency set for compose.demo.yml.
 # Production semantic indexing dependencies remain in requirements.txt.
-fastapi>=0.115,<1
+fastapi>=0.141.1,<1
 uvicorn[standard]>=0.30,<1
 python-multipart>=0.0.9
 streamlit>=1.38,<2
