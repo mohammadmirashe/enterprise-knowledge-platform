@@ -1,0 +1,67 @@
+name: Demo Smoke Test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "src/**"
+      - "ui.py"
+      - "Dockerfile"
+      - "compose.demo.yml"
+      - "requirements-demo.txt"
+      - ".github/workflows/demo-smoke.yml"
+  pull_request:
+    paths:
+      - "app/**"
+      - "src/**"
+      - "ui.py"
+      - "Dockerfile"
+      - "compose.demo.yml"
+      - "requirements-demo.txt"
+      - ".github/workflows/demo-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: demo-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Compose configuration
+        run: docker compose -f compose.demo.yml config --quiet
+
+      - name: Build and start demo
+        run: docker compose -f compose.demo.yml up --detach --build
+
+      - name: Wait for API and UI
+        run: |
+          timeout 180 sh -c 'until curl --fail --silent http://127.0.0.1:8000/health >/dev/null; do sleep 3; done'
+          timeout 180 sh -c 'until curl --fail --silent http://127.0.0.1:8501/_stcore/health >/dev/null; do sleep 3; done'
+
+      - name: Verify seeded demo
+        run: |
+          curl --fail --silent http://127.0.0.1:8000/health | grep '"demo_mode":true'
+          curl --fail --silent http://127.0.0.1:8000/dashboard | grep '"published":4'
+          curl --fail --silent http://127.0.0.1:8000/demo/status | grep '"local_grounded_demo"'
+
+      - name: Show service status on failure
+        if: failure()
+        run: |
+          docker compose -f compose.demo.yml ps
+          docker compose -f compose.demo.yml logs --no-color --tail=200
+
+      - name: Stop demo
+        if: always()
+        run: docker compose -f compose.demo.yml down --volumes
+

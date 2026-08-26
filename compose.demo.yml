@@ -1,0 +1,52 @@
+name: enterprise-knowledge-platform-demo
+
+services:
+  api:
+    build:
+      context: .
+      args:
+        REQUIREMENTS_FILE: requirements-demo.txt
+    image: enterprise-knowledge-platform-demo:local
+    init: true
+    restart: unless-stopped
+    environment:
+      APP_NAME: Enterprise Knowledge Platform Demo
+      DEMO_MODE: "true"
+      EMBEDDING_DEVICE: cpu
+    ports:
+      - "${DEMO_API_PORT:-8000}:8000"
+    volumes:
+      - demo_data:/app/data
+      - demo_storage:/app/storage
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      start_period: 20s
+      retries: 5
+
+  ui:
+    image: enterprise-knowledge-platform-demo:local
+    init: true
+    restart: unless-stopped
+    command: streamlit run ui.py --server.address=0.0.0.0 --server.port=8501 --server.headless=true
+    environment:
+      DEMO_MODE: "true"
+      API_URL: http://api:8000
+      PUBLIC_API_URL: http://localhost:${DEMO_API_PORT:-8000}
+      STREAMLIT_BROWSER_GATHER_USAGE_STATS: "false"
+    ports:
+      - "${DEMO_UI_PORT:-8501}:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      start_period: 20s
+      retries: 5
+
+volumes:
+  demo_data:
+  demo_storage:

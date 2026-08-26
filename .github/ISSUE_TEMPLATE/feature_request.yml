@@ -1,0 +1,23 @@
+name: پیشنهاد قابلیت
+description: یک بهبود یا قابلیت جدید پیشنهاد دهید
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: مسئله
+      description: این قابلیت کدام نیاز واقعی را حل می‌کند؟
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: راه‌حل پیشنهادی
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: گزینه‌های جایگزین
+

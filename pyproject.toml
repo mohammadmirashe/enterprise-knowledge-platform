@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "enterprise-knowledge-platform"
+version = "0.9.0"
+description = "Persian-first enterprise knowledge capture and retrieval platform"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dynamic = ["dependencies"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Framework :: FastAPI",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+
+[tool.setuptools]
+py-modules = ["config"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*", "src*"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-config --strict-markers"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+extend-exclude = ["data", "storage"]
+
+[tool.ruff.lint]
+select = ["E9", "F63", "F7", "F82"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_unused_configs = true
+check_untyped_defs = true
+ignore_missing_imports = true
+

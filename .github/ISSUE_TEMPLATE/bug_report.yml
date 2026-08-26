@@ -1,0 +1,42 @@
+name: گزارش باگ
+description: رفتاری قابل بازتولید را گزارش کنید
+title: "[Bug]: "
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: لطفاً داده محرمانه، کلید API یا سند سازمانی را در Issue قرار ندهید.
+  - type: input
+    id: version
+    attributes:
+      label: نسخه
+      placeholder: v0.9.0
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: شرح مشکل
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: مراحل بازتولید
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: رفتار مورد انتظار
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: محیط اجرا
+      description: سیستم‌عامل، نسخه Python و روش اجرا
+
